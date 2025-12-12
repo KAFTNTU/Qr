@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Мій QR-генератор</title>
+
+  <!-- бібліотека QR -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding-top: 50px;
+    }
+    input {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    #qrcode {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Мій QR-генератор</h1>
+
+  <input id="qrText" type="text" placeholder="Введи текст або посилання">
+  <button onclick="generateQR()">Згенерувати</button>
+
+  <div id="qrcode"></div>
+
+  <script>
+    function generateQR() {
+      const text = document.getElementById("qrText").value;
+      const qrDiv = document.getElementById("qrcode");
+
+      qrDiv.innerHTML = ""; // очистка
+
+      if (text === "") {
+        alert("Введи текст!");
+        return;
+      }
+
+      new QRCode(qrDiv, {
+        text: text,
+        width: 200,
+        height: 200
+      });
+    }
+  </script>
+
+</body>
+</html>

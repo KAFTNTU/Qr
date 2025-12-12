@@ -1,94 +1,176 @@
+
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<title>QR генератор</title>
-
-<style>
-  body {
-    background: #0f172a;
-    color: white;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding-top: 40px;
-  }
-  input {
-    width: 320px;
-    padding: 10px;
-    font-size: 16px;
-  }
-  button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 10px;
-    cursor: pointer;
-  }
-  canvas {
-    margin-top: 20px;
-    background: white;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Генератор</title>
+    <!-- Завантажуємо Tailwind CSS для сучасного стилю та адаптивності -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Встановлюємо користувацький шрифт */
+        body { font-family: 'Inter', sans-serif; }
+        /* Стиль для Canvas, щоб він був чітко видно на темному фоні */
+        #qr {
+            transition: transform 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        #qr:hover {
+            transform: scale(1.02);
+        }
+    </style>
 </head>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
 
-<body>
+    <!-- Основний контейнер для адаптивності -->
+    <div class="w-full max-w-md bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl space-y-6">
 
-<h1>Мій QR-генератор</h1>
+        <h1 class="text-3xl font-bold text-center text-indigo-400">QR-генератор</h1>
 
-<input id="text" placeholder="Введи текст або https://посилання">
-<br>
+        <!-- Поле вводу -->
+        <input
+            id="textInput"
+            type="text"
+            placeholder="Введіть текст або https://посилання"
+            class="w-full p-3 rounded-lg border border-slate-700 bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150"
+            onkeydown="if(event.key === 'Enter') generateQrCode()"
+        >
 
-<button onclick="generate()">Згенерувати</button>
-<button onclick="download()">Скачати PNG</button>
+        <!-- Кнопки керування -->
+        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+            <button
+                onclick="generateQrCode()"
+                class="w-full p-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition duration-200 active:scale-95 transform flex items-center justify-center space-x-2"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <path d="M14 14h.01"></path><path d="M18 18h.01"></path><path d="M18 14h.01"></path><path d="M14 18h.01"></path>
+                </svg>
+                <span>Згенерувати QR</span>
+            </button>
+            <button
+                onclick="downloadQrCode()"
+                id="downloadButton"
+                class="w-full p-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition duration-200 active:scale-95 transform flex items-center justify-center space-x-2 disabled:opacity-50"
+                disabled
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Скачати PNG</span>
+            </button>
+        </div>
 
-<br>
-<canvas id="qr"></canvas>
+        <!-- Поле для повідомлень замість alert() -->
+        <div id="messageBox" class="text-center h-5 text-sm font-medium text-red-400"></div>
 
-<script>
-/*
-  Мінімальна QR-реалізація (без бібліотек)
-  Використовує QR API браузера через Canvas
-*/
+        <!-- Canvas для відображення QR-коду -->
+        <div class="flex justify-center items-center p-2 bg-slate-700 rounded-xl shadow-inner">
+            <canvas
+                id="qrCanvas"
+                width="0"
+                height="0"
+                class="rounded-lg shadow-xl bg-white border-4 border-white"
+            ></canvas>
+        </div>
+    </div>
 
-function generate() {
-  const text = document.getElementById("text").value;
-  if (!text) {
-    alert("Введи текст");
-    return;
-  }
+    <script>
+        const canvas = document.getElementById("qrCanvas");
+        const ctx = canvas.getContext("2d");
+        const textInput = document.getElementById("textInput");
+        const messageBox = document.getElementById("messageBox");
+        const downloadButton = document.getElementById("downloadButton");
+        const defaultSize = 250;
+        let isQrGenerated = false;
 
-  const size = 250;
-  const canvas = document.getElementById("qr");
-  canvas.width = size;
-  canvas.height = size;
+        /**
+         * Показує повідомлення в спеціальному блоці, замінюючи alert().
+         * @param {string} message Повідомлення для відображення.
+         * @param {string} type Тип повідомлення ('error' або 'success').
+         */
+        function showMessage(message, type = 'error') {
+            messageBox.textContent = message;
+            messageBox.className = `text-center h-5 text-sm font-medium transition duration-300 ${
+                type === 'error' ? 'text-red-400' : 'text-green-400'
+            }`;
+            // Приховуємо повідомлення через 3 секунди
+            setTimeout(() => {
+                messageBox.textContent = '';
+            }, 3000);
+        }
 
-  const ctx = canvas.getContext("2d");
+        /**
+         * Генерує QR-код, використовуючи зовнішній API.
+         */
+        function generateQrCode() {
+            const text = textInput.value.trim();
 
-  // очистка
-  ctx.fillStyle = "white";
-  ctx.fillRect(0, 0, size, size);
+            if (!text) {
+                showMessage("Будь ласка, введіть текст або посилання.");
+                return;
+            }
 
-  // використовуємо вбудований QR через Image
-  const img = new Image();
-  img.onload = () => ctx.drawImage(img, 0, 0, size, size);
+            // Встановлюємо розмір Canvas
+            canvas.width = defaultSize;
+            canvas.height = defaultSize;
 
-  img.src =
-    "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" +
-    encodeURIComponent(text);
-}
+            // Очищаємо canvas, заповнюючи його білим кольором (ВАЖЛИВО: білий фон QR-коду)
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, defaultSize, defaultSize);
 
-function download() {
-  const canvas = document.getElementById("qr");
-  if (canvas.width === 0) {
-    alert("Спочатку згенеруй QR");
-    return;
-  }
+            // Використовуємо Image для завантаження QR-коду з API
+            const img = new Image();
+            img.crossOrigin = "Anonymous"; // Важливо для уникнення проблем з CORS при toDataURL()
+            img.onload = () => {
+                // Малюємо QR-код на білому полотні
+                ctx.drawImage(img, 0, 0, defaultSize, defaultSize);
+                isQrGenerated = true;
+                downloadButton.disabled = false; // Активуємо кнопку скачування
+                showMessage("QR-код успішно згенеровано!", 'success');
+            };
+            img.onerror = () => {
+                showMessage("Помилка завантаження QR-коду. Спробуйте ще раз.");
+                isQrGenerated = false;
+                downloadButton.disabled = true;
+            };
 
-  const link = document.createElement("a");
-  link.download = "qr.png";
-  link.href = canvas.toDataURL();
-  link.click();
-}
-</script>
+            // URL для генерації QR-коду
+            const apiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=";
+            img.src = apiUrl + encodeURIComponent(text);
+        }
+
+        /**
+         * Скачує згенерований QR-код як PNG файл.
+         */
+        function downloadQrCode() {
+            if (!isQrGenerated) {
+                showMessage("Спочатку згенеруйте QR-код, натиснувши 'Згенерувати QR'.");
+                return;
+            }
+
+            // Створюємо тимчасове посилання для скачування
+            const link = document.createElement("a");
+            link.download = "qr-code_" + Date.now() + ".png";
+            // Отримуємо Data URL з canvas
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+            showMessage("Файл PNG завантажується...", 'success');
+        }
+
+        // Початкова ініціалізація, щоб canvas був порожнім
+        window.onload = () => {
+             // Встановлюємо початкові розміри canvas, щоб він не займав місце
+            canvas.width = defaultSize;
+            canvas.height = defaultSize;
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, defaultSize, defaultSize);
+        }
+
+    </script>
 
 </body>
 </html>
+

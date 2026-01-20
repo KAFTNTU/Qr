@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RoboControl Car V9.15</title>
+    <title>RoboControl Car V9.16</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,6 +14,9 @@
     <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
     <!-- LANGUAGE -->
     <script src="https://unpkg.com/blockly/msg/uk.js"></script>
+
+    <!-- ПІДКЛЮЧЕННЯ ФАЙЛУ ДОВІДКИ -->
+    <script src="help_content.js"></script>
 
     <style>
         /* --- GLOBAL STYLES --- */
@@ -255,9 +258,16 @@
             </button>
         </nav>
         
-        <button id="btConnect" class="w-10 h-10 rounded-full bg-blue-600 active:bg-blue-700 hover:bg-blue-500 text-white shadow-lg flex items-center justify-center transition-all border border-blue-400/30">
-            <i class="fa-brands fa-bluetooth-b text-lg"></i>
-        </button>
+        <div class="flex gap-2">
+            <!-- HELP BUTTON -->
+            <button onclick="openHelpModal()" class="w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-600 text-white shadow-lg flex items-center justify-center border border-slate-500/30">
+                <i class="fa-solid fa-question text-lg"></i>
+            </button>
+            
+            <button id="btConnect" class="w-10 h-10 rounded-full bg-blue-600 active:bg-blue-700 hover:bg-blue-500 text-white shadow-lg flex items-center justify-center transition-all border border-blue-400/30">
+                <i class="fa-brands fa-bluetooth-b text-lg"></i>
+            </button>
+        </div>
     </header>
 
     <!-- === MAIN CONTENT === -->
@@ -425,6 +435,23 @@
 
     <!-- === MODALS === -->
     
+    <!-- Help Modal -->
+    <div id="helpModal" class="fixed inset-0 bg-black/80 z-[90] hidden flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-slate-900 w-full max-w-lg h-[80vh] rounded-2xl shadow-2xl border border-slate-700 flex flex-col">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-800 rounded-t-2xl">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-blue-400"></i> Довідник блоків
+                </h3>
+                <button onclick="document.getElementById('helpModal').classList.add('hidden')" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div id="helpContentArea" class="flex-1 overflow-y-auto p-5 custom-scrollbar">
+                <!-- Content injected from JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Examples Modal -->
     <div id="exampleModal" class="fixed inset-0 bg-black/80 z-[70] hidden flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-slate-700 p-6 overflow-y-auto max-h-[90vh]">
@@ -572,25 +599,25 @@
         <category name="Рух" colour="#4C97FF">
             <block type="start_hat"></block>
             <block type="robot_move">
-                <value name="L"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
-                <value name="R"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+                <value name="L"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
+                <value name="R"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
             </block>
             <block type="robot_turn_timed">
                  <field name="DIR">LEFT</field>
                  <value name="SEC"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value>
             </block>
             <block type="robot_set_speed">
-                <value name="SPEED"><shadow type="math_number"><field name="NUM">50</field></shadow></value>
+                <value name="SPEED"><shadow type="math_number_limited"><field name="NUM">50</field></shadow></value>
             </block>
             <block type="robot_stop"></block>
             <block type="move_4_motors">
-                <value name="M1"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
-                <value name="M2"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
-                <value name="M3"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
-                <value name="M4"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+                <value name="M1"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
+                <value name="M2"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
+                <value name="M3"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
+                <value name="M4"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
             </block>
             <block type="motor_single">
-                <value name="SPEED"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
+                <value name="SPEED"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
             </block>
             <!-- REPAINTED GO HOME (WAS IN TIME) -->
             <block type="go_home"></block>
@@ -955,6 +982,17 @@
             if (pass) { sendTextData(`PASS:${pass}`); document.getElementById('passInput').value = ''; closePassModal(); }
         }
         function openExampleModal() { document.getElementById('exampleModal').classList.remove('hidden'); }
+
+        // Help Modal
+        function openHelpModal() {
+            const contentDiv = document.getElementById('helpContentArea');
+            if (typeof ROBO_HELP_HTML !== 'undefined') {
+                contentDiv.innerHTML = ROBO_HELP_HTML;
+            } else {
+                contentDiv.innerHTML = '<div class="text-center text-red-400 mt-10">Файл довідки не знайдено!<br>Переконайтеся, що help_content.js знаходиться в тій самій папці.</div>';
+            }
+            document.getElementById('helpModal').classList.remove('hidden');
+        }
 
         // Joystick Logic
         const stick = document.getElementById('joystick-stick');
@@ -1389,6 +1427,19 @@
             var size = block.getFieldValue('SIZE');
             var id = block.id;
             return [`smoothValue('${id}', ${val}, ${size})`, javascript.Order.FUNCTION_CALL];
+        };
+
+        // --- LIMITED NUMBER BLOCK (FOR MOTORS) ---
+        Blockly.Blocks['math_number_limited'] = {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField(new Blockly.FieldNumber(100, -100, 100), "NUM"); // Min -100, Max 100
+                this.setOutput(true, "Number");
+                this.setColour(230);
+            }
+        };
+        javascript.javascriptGenerator.forBlock['math_number_limited'] = function(block) {
+            return [block.getFieldValue('NUM'), javascript.Order.ATOMIC];
         };
 
 

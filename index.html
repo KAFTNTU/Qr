@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RoboControl Car V9.17</title>
+    <title>RoboControl Car V9.20</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,6 +25,12 @@
             background-color: #0f172a;
             color: white;
             overflow: hidden; 
+        }
+        
+        /* --- FIX FOR BLOCKLY COMMENTS --- */
+        .blocklyCommentTextarea {
+            color: #000000 !important; /* Чорний текст коментаря */
+            background-color: #fef08a !important; /* Світло-жовтий фон */
         }
         
         .glass-header {
@@ -377,7 +383,7 @@
                 <!-- LEFT GROUP (M1, M3) -->
                 <div class="joy-quad-wrapper">
                     <div>
-                        <div class="joy-quad-label">M1</div>
+                        <div class="joy-quad-label">M1 (Перед)</div>
                         <div id="joy1-container" class="joy-quad-container">
                             <div id="joy1-base" class="joy-quad-base">
                                 <div id="joy1-stick" class="joy-quad-stick snap"></div>
@@ -385,7 +391,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="joy-quad-label">M3</div>
+                        <div class="joy-quad-label">M3 (Зад)</div>
                         <div id="joy3-container" class="joy-quad-container">
                             <div id="joy3-base" class="joy-quad-base">
                                 <div id="joy3-stick" class="joy-quad-stick snap"></div>
@@ -397,7 +403,7 @@
                 <!-- RIGHT GROUP (M2, M4) -->
                 <div class="joy-quad-wrapper">
                     <div>
-                        <div class="joy-quad-label">M2</div>
+                        <div class="joy-quad-label">M2 (Перед)</div>
                         <div id="joy2-container" class="joy-quad-container">
                             <div id="joy2-base" class="joy-quad-base">
                                 <div id="joy2-stick" class="joy-quad-stick snap"></div>
@@ -405,7 +411,7 @@
                         </div>
                     </div>
                     <div>
-                        <div class="joy-quad-label">M4</div>
+                        <div class="joy-quad-label">M4 (Зад)</div>
                         <div id="joy4-container" class="joy-quad-container">
                             <div id="joy4-base" class="joy-quad-base">
                                 <div id="joy4-stick" class="joy-quad-stick snap"></div>
@@ -458,17 +464,25 @@
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-file-code"></i> Мої файли
                 </h3>
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-4 gap-2">
+                    <!-- NEW (TRASH) BUTTON -->
                     <button onclick="newProject()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
                         <i class="fa-solid fa-trash text-red-400 text-xl group-hover:scale-110 transition-transform"></i>
                         <div class="text-xs font-bold text-slate-300">Новий</div>
                     </button>
+                    <!-- SAVE BUTTON -->
                     <button onclick="saveMyFile()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
                         <i class="fa-solid fa-download text-blue-400 text-xl group-hover:scale-110 transition-transform"></i>
                         <div class="text-xs font-bold text-slate-300">Зберегти</div>
                     </button>
-                    <button onclick="document.getElementById('fileInput').click()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
-                        <i class="fa-solid fa-upload text-green-400 text-xl group-hover:scale-110 transition-transform"></i>
+                    <!-- APPEND (ADD) BUTTON -->
+                    <button onclick="document.getElementById('fileInputAppend').click()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
+                        <i class="fa-solid fa-plus text-yellow-400 text-xl group-hover:scale-110 transition-transform"></i>
+                        <div class="text-xs font-bold text-slate-300">Додати</div>
+                    </button>
+                    <!-- OPEN (REPLACE) BUTTON -->
+                    <button onclick="document.getElementById('fileInputReplace').click()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
+                        <i class="fa-solid fa-folder-open text-green-400 text-xl group-hover:scale-110 transition-transform"></i>
                         <div class="text-xs font-bold text-slate-300">Відкрити</div>
                     </button>
                 </div>
@@ -477,8 +491,10 @@
             <button onclick="document.getElementById('exampleModal').classList.add('hidden')" class="w-full mt-6 py-3 rounded-xl bg-slate-800 text-slate-400 hover:text-white border border-slate-700 font-bold text-sm">Скасувати</button>
         </div>
     </div>
-    <!-- HIDDEN FILE INPUT -->
-    <input type="file" id="fileInput" accept=".xml" style="display: none" onchange="loadMyFile(this)">
+    
+    <!-- HIDDEN FILE INPUTS -->
+    <input type="file" id="fileInputReplace" accept=".xml" style="display: none" onchange="loadMyFile(this, false)">
+    <input type="file" id="fileInputAppend" accept=".xml" style="display: none" onchange="loadMyFile(this, true)">
 
     <!-- Tuning Modal -->
     <div id="tuningModal" class="fixed inset-0 bg-black/90 z-[80] hidden flex items-center justify-center backdrop-blur-md p-4">
@@ -955,17 +971,6 @@
             if (pass) { sendTextData(`PASS:${pass}`); document.getElementById('passInput').value = ''; closePassModal(); }
         }
         function openExampleModal() { document.getElementById('exampleModal').classList.remove('hidden'); }
-
-        // Help Modal
-        function openHelpModal() {
-            const contentDiv = document.getElementById('helpContentArea');
-            if (typeof ROBO_HELP_HTML !== 'undefined') {
-                contentDiv.innerHTML = ROBO_HELP_HTML;
-            } else {
-                contentDiv.innerHTML = '<div class="text-center text-red-400 mt-10">Файл довідки не знайдено!<br>Переконайтеся, що help_content.js знаходиться в тій самій папці.</div>';
-            }
-            document.getElementById('helpModal').classList.remove('hidden');
-        }
 
         // Joystick Logic
         const stick = document.getElementById('joystick-stick');
@@ -1635,6 +1640,68 @@
                  document.getElementById('exampleModal').classList.add('hidden');
                  log("Loaded example: " + type, 'info');
              }
+        }
+
+        function newProject() {
+            if(confirm("Створити новий проект? Поточні блоки будуть видалені.")) {
+                workspace.clear();
+                const xmlStr = '<xml xmlns="https://developers.google.com/blockly/xml"><block type="start_hat" x="50" y="50"></block></xml>';
+                Blockly.Xml.domToWorkspace(Blockly.utils.xml.textToDom(xmlStr), workspace);
+                document.getElementById('exampleModal').classList.add('hidden');
+                log("Створено новий проект", "info");
+            }
+        }
+
+        // --- MY FILES LOGIC ---
+        function saveMyFile() {
+            try {
+                const xmlDom = Blockly.Xml.workspaceToDom(workspace);
+                const xmlText = Blockly.utils.xml.domToText(xmlDom);
+                
+                // NEW: Ask for filename
+                let fileName = prompt("Введіть назву для файлу:", "robot_code");
+                if (fileName === null) return; // Cancelled
+                if (!fileName) fileName = "robot_block_code"; // Default
+                if (!fileName.toLowerCase().endsWith(".xml")) fileName += ".xml";
+
+                const blob = new Blob([xmlText], {type: "text/xml"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                document.getElementById('exampleModal').classList.add('hidden');
+                log("Файл збережено: " + fileName, "info");
+            } catch(e) {
+                log("Помилка збереження: " + e, "err");
+            }
+        }
+
+        function loadMyFile(input, isAppend) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const xmlText = e.target.result;
+                try {
+                    if (!isAppend) {
+                        workspace.clear();
+                    }
+                    const xmlDom = Blockly.utils.xml.textToDom(xmlText);
+                    Blockly.Xml.domToWorkspace(xmlDom, workspace);
+                    log(isAppend ? "Файл додано!" : "Файл відкрито!", "info");
+                    document.getElementById('exampleModal').classList.add('hidden');
+                } catch(err) {
+                    alert("Помилка при завантаженні файлу. Переконайтесь, що це правильний XML.");
+                    log("Load Error: " + err, "err");
+                }
+            };
+            reader.readAsText(file);
+            input.value = ''; // Reset input
         }
 
         // Custom Prompts for Variables

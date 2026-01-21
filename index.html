@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RoboControl Car V9.50</title>
+    <title>RoboControl Car V10.0</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- CORE BLOCKLY -->
     <script src="https://unpkg.com/blockly/blockly.min.js"></script>
-    <!-- GENERATORS -->
     <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
-    <!-- LANGUAGE -->
     <script src="https://unpkg.com/blockly/msg/uk.js"></script>
 
     <style>
@@ -135,7 +133,6 @@
         .blocklyTreeRow { height: 48px !important; padding: 0 12px !important; margin: 0 4px !important; border-radius: 10px !important; cursor: pointer; display: flex; align-items: center; justify-content: center; border: 1px solid transparent; }
         .blocklyTreeLabel { font-family: 'Segoe UI', sans-serif; font-weight: 700; font-size: 13px !important; }
         
-        /* HIDE SCROLLBARS BUT KEEP FUNCTIONALITY */
         .blocklyScrollbarHandle, .blocklyScrollbarBackground { display: none !important; pointer-events: none !important; opacity: 0 !important; }
 
         /* --- SENSOR DASHBOARD & BUTTONS --- */
@@ -185,7 +182,6 @@
         
         .btn-example { background: #f59e0b; }
         .btn-run { background: #22c55e; }
-        /* STOP STATE FOR BUTTON */
         .btn-run.running { background: #ef4444; animation: pulse-red 2s infinite; }
         
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
@@ -197,7 +193,6 @@
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: #94a3b8; }
         .nav-btn.active { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
         
-        /* LOG VIEW STYLES */
         .log-line { font-family: 'Courier New', monospace; font-size: 11px; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .log-tx { color: #60a5fa; } .log-rx { color: #34d399; } .log-err { color: #f87171; }
 
@@ -264,7 +259,6 @@
         <!-- --- VIEW 1: JOYSTICK (MAIN) --- -->
         <section id="view-joystick" class="absolute inset-0 flex flex-col items-center justify-center p-4 transition-opacity duration-300">
             
-            <!-- Joystick -->
             <div id="joystick-container" class="mb-2">
                 <div id="joystick-base">
                     <div id="joystick-stick" class="snap-back"></div>
@@ -275,10 +269,8 @@
                 <span class="key-hint">W</span> <span class="key-hint">A</span> <span class="key-hint">S</span> <span class="key-hint">D</span> для руху
             </div>
 
-            <!-- Controls Cluster -->
             <div class="w-full max-w-xs flex flex-col gap-3 bg-slate-800/40 p-4 rounded-2xl border border-slate-700/30 backdrop-blur-sm">
                 
-                <!-- Monitors & Gyro -->
                 <div class="flex items-center justify-between gap-4">
                     <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 text-center flex-1">
                         <span class="text-[10px] text-green-500 font-bold mr-1">L</span>
@@ -295,7 +287,6 @@
                     </div>
                 </div>
 
-                <!-- Speed Slider -->
                 <div class="pt-2 border-t border-white/5">
                     <div class="flex justify-between text-[10px] text-slate-400 mb-1 uppercase tracking-wide">
                         <span>Потужність</span>
@@ -304,12 +295,10 @@
                     <input type="range" id="speedSlider" min="10" max="100" value="100" step="10">
                 </div>
                 
-                 <!-- Tuning Button -->
                 <button onclick="document.getElementById('tuningModal').classList.remove('hidden')" class="w-full py-2 mt-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-bold text-slate-300 border border-slate-600 transition-colors flex items-center justify-center gap-2">
                     <i class="fa-solid fa-sliders"></i> Налаштування моторів
                 </button>
 
-                <!-- HEX Display -->
                 <div class="bg-black/40 px-3 py-1 rounded text-[10px] font-mono tracking-widest text-slate-400 border border-slate-800/50 text-center mt-2">
                     HEX: <span id="joyHex" class="text-yellow-500 font-bold">00 00 00 00</span>
                 </div>
@@ -320,14 +309,11 @@
         <!-- --- VIEW 2: BUILDER (SCRATCH) --- -->
         <section id="view-builder" class="absolute inset-0 flex flex-col hidden opacity-0 transition-opacity duration-300">
             
-            <!-- Top Row: Examples + Sensor Dashboard + Run Btn -->
             <div class="sensor-row">
-                 <!-- EXAMPLES BUTTON (ICON ONLY, SMALLER) -->
                 <button onclick="openExampleModal()" class="top-btn btn-example" title="Готові збірки">
                     <i class="fa-solid fa-folder-open"></i>
                 </button>
 
-                <!-- Sensor Dashboard -->
                 <div class="sensor-dashboard" id="sensorDashboard">
                     <div class="sensor-item">
                         <span class="sensor-label">Port 1</span>
@@ -350,13 +336,11 @@
                     </div>
                 </div>
 
-                <!-- RUN BUTTON (ICON ONLY, SMALLER) -->
                 <button id="globalRunBtn" class="top-btn btn-run" onclick="toggleRunState()" title="Запуск/Стоп">
                      <i class="fa-solid fa-play" id="runIcon"></i>
                 </button>
             </div>
 
-            <!-- Blockly Div -->
             <div id="blocklyDiv" class="flex-1 mt-0"></div>
         </section>
 
@@ -369,10 +353,8 @@
                 </div>
             </div>
 
-            <!-- 4 JOYSTICK GRID -->
             <div class="w-full h-full flex items-center justify-center gap-8 px-4 pt-10">
                 
-                <!-- LEFT GROUP (M1, M3) -->
                 <div class="joy-quad-wrapper">
                     <div>
                         <div class="joy-quad-label">M1 (Перед)</div>
@@ -392,7 +374,6 @@
                     </div>
                 </div>
 
-                <!-- RIGHT GROUP (M2, M4) -->
                 <div class="joy-quad-wrapper">
                     <div>
                         <div class="joy-quad-label">M2 (Перед)</div>
@@ -423,7 +404,6 @@
 
     <!-- === MODALS === -->
     
-    <!-- Examples Modal -->
     <div id="exampleModal" class="fixed inset-0 bg-black/80 z-[70] hidden flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-slate-700 p-6 overflow-y-auto max-h-[90vh]">
             <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-folder-open text-amber-500"></i> Готові збірки</h3>
@@ -451,7 +431,6 @@
                 </button>
             </div>
 
-            <!-- MY FILES BLOCK -->
             <div class="mt-6 pt-4 border-t border-slate-700">
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-file-code"></i> Мої файли
@@ -480,11 +459,9 @@
         </div>
     </div>
     
-    <!-- HIDDEN FILE INPUTS -->
     <input type="file" id="fileInputReplace" accept=".xml" style="display: none" onchange="loadMyFile(this, false)">
     <input type="file" id="fileInputAppend" accept=".xml" style="display: none" onchange="loadMyFile(this, true)">
 
-    <!-- Tuning Modal -->
     <div id="tuningModal" class="fixed inset-0 bg-black/90 z-[80] hidden flex items-center justify-center backdrop-blur-md p-4">
         <div class="bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-slate-700 p-5 overflow-y-auto max-h-[90vh]">
             <h3 class="text-lg font-bold text-white mb-4 text-center">⚙️ Налаштування шасі</h3>
@@ -551,7 +528,6 @@
         </div>
     </div>
 
-    <!-- === LOG MODAL (New) === -->
     <div id="logModal" class="fixed inset-0 bg-black/50 z-40 hidden flex items-end sm:items-center justify-center backdrop-blur-sm sm:p-4">
         <div class="bg-slate-900 w-full sm:max-w-md h-2/3 sm:h-[500px] sm:rounded-2xl rounded-t-2xl shadow-2xl border border-slate-700 flex flex-col">
             <div class="flex justify-between items-center p-4 border-b border-slate-800">
@@ -574,6 +550,10 @@
             <block type="robot_move">
                 <value name="L"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
                 <value name="R"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
+            </block>
+            <block type="robot_move_soft">
+                <value name="TARGET"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
+                <value name="SEC"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
             </block>
             <block type="robot_turn_timed">
                  <field name="DIR">LEFT</field>
@@ -658,7 +638,6 @@
             <block type="timer_reset"></block>
         </category>
         <category name="Змінні" colour="%{BKY_VARIABLES_HUE}" custom="VARIABLE"></category>
-        <!-- REMOVED COMMENT CATEGORY -->
     </xml>
 
     <script>
@@ -717,7 +696,7 @@
         btnLog.addEventListener('mousedown', () => {
             logPressTimer = setTimeout(() => {
                 document.getElementById('logModal').classList.remove('hidden');
-            }, 3000); // 3 seconds
+            }, 3000); 
         });
         btnLog.addEventListener('mouseup', () => clearTimeout(logPressTimer));
         btnLog.addEventListener('touchstart', (e) => {
@@ -727,7 +706,7 @@
         });
         btnLog.addEventListener('touchend', () => clearTimeout(logPressTimer));
 
-        // LOGGING FUNCTIONS (AS REQUESTED)
+        // LOGGING FUNCTIONS
         function log(msg, type = 'info') {
             const container = document.getElementById('logContainer');
             if (container.childElementCount > 1500) {
@@ -749,7 +728,6 @@
         function clearLog() { document.getElementById('logContainer').innerHTML = ''; }
         function toggleLogModal() { document.getElementById('logModal').classList.toggle('hidden'); }
 
-        // Override console.log for better debugging view
         const originalLog = console.log;
         console.log = function(...args) {
             originalLog.apply(console, args);
@@ -775,7 +753,6 @@
             localStorage.setItem('roboTuning_v8', JSON.stringify(tuning));
         }
 
-        // === HEARTBEAT ===
         setInterval(() => {
             if (isConnected && activeView === 'view-joystick') {
                 let m1 = currentL, m2 = currentR;
@@ -785,7 +762,6 @@
             }
         }, 100);
 
-        // === SLIP PROTOCOL ===
         const SLIP_END = 0xC0;
         const SLIP_ESC = 0xDB;
         const SLIP_ESC_END = 0xDC;
@@ -842,14 +818,12 @@
             }
         }
 
-        // === BLUETOOTH CORE ===
         window.motorState = { m1:0, m2:0, m3:0, m4:0 };
 
         async function sendDrivePacket(m1, m2, m3, m4) {
             if (!isConnected && !window.isSimulating) return;
             window.motorState = { m1, m2, m3, m4 };
 
-            // === RECORDING LOGIC ===
             if (window._isRecordingTrack) {
                 let now = new Date().getTime();
                 window._trackMemory.push({
@@ -899,7 +873,6 @@
             try { await characteristic.writeValue(finalPacket); log(`Cmd: ${str}`, 'tx'); } catch(e) { log(e, 'err'); }
         }
 
-        // Bluetooth Connect
         btnConnect.addEventListener('click', async () => {
             if(isConnected) { if(device) device.gatt.disconnect(); return; }
             try {
@@ -939,7 +912,6 @@
             } catch(e) { log(e, 'err'); }
         });
 
-        // Navigation
         function switchView(viewId, btnElement) {
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
@@ -968,7 +940,6 @@
         }
         function openExampleModal() { document.getElementById('exampleModal').classList.remove('hidden'); }
 
-        // Joystick Logic
         const stick = document.getElementById('joystick-stick');
         const base = document.getElementById('joystick-base');
         const gyroBtn = document.getElementById('gyroBtn');
@@ -983,7 +954,6 @@
             updateTankLogic(lastJoyX, lastJoyY);
         });
 
-        // Keyboard
         const keys = { w: false, a: false, s: false, d: false };
         document.addEventListener('keydown', (e) => { if(activeView!=='view-joystick')return; const k=e.key.toLowerCase(); if(keys.hasOwnProperty(k)){keys[k]=true; updateKeyboardLogic();} });
         document.addEventListener('keyup', (e) => { if(activeView!=='view-joystick')return; const k=e.key.toLowerCase(); if(keys.hasOwnProperty(k)){keys[k]=false; updateKeyboardLogic();} });
@@ -994,7 +964,6 @@
             updateTankLogic(x,y);
         }
 
-        // Gyro
         function toggleGyro() {
             if (!window.DeviceOrientationEvent) { alert("Немає підтримки гіроскопа"); return; }
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -1103,10 +1072,6 @@
         window.addEventListener('mouseup', endJoy); window.addEventListener('touchend', endJoy);
         window.addEventListener('mousemove', moveJoy); window.addEventListener('touchmove', moveJoy, {passive:false});
 
-        // ============================================
-        // 4 MOTOR (QUAD) JOYSTICK LOGIC
-        // ============================================
-        
         const quadState = { m1:0, m2:0, m3:0, m4:0 };
         
         function initQuadJoystick(id) {
@@ -1190,7 +1155,6 @@
             }
         }, 100);
 
-        // === BLOCKLY & SCRATCH ===
         const CustomTheme = Blockly.Theme.defineTheme('myTheme', {
             'base': Blockly.Themes.Classic,
             'componentStyles': {
@@ -1216,7 +1180,6 @@
             document.head.appendChild(style);
         }, 500);
 
-        // --- GLOBAL STOP CHECK HELPER ---
         function checkStop() {
             return `if (typeof window._shouldStop !== 'undefined' && window._shouldStop) { throw "STOPPED"; }\n`;
         }
@@ -1230,11 +1193,6 @@
         };
         javascript.javascriptGenerator.forBlock['start_hat'] = function(b) { return ''; };
 
-        // --- REMOVED BLOCK_COMMENT DEFINITION ---
-
-        // --- MEMORY BLOCKS ---
-        
-        // 1. Запам'ятати трасу
         Blockly.Blocks['record_start'] = {
             init: function() {
                 this.appendDummyInput().appendField("🔴 Запам'ятати трасу (Почати запис)");
@@ -1251,7 +1209,6 @@
             \n`;
         };
 
-        // 2. Відтворити трасу
         Blockly.Blocks['replay_track'] = {
             init: function() {
                 this.appendDummyInput().appendField("▶️ Відтворити записану трасу");
@@ -1262,7 +1219,7 @@
         };
         javascript.javascriptGenerator.forBlock['replay_track'] = function(block) {
             return `
-            window._isRecordingTrack = false; // Stop recording if active
+            window._isRecordingTrack = false; 
             console.log("Replaying track, steps: " + window._trackMemory.length);
             
             if (window._trackMemory.length > 0) {
@@ -1284,7 +1241,6 @@
             \n`;
         };
         
-        // 3. Відтворити N разів
         Blockly.Blocks['replay_loop'] = {
             init: function() {
                 this.appendDummyInput().appendField("🔄 Повторити трасу з пам'яті");
@@ -1319,7 +1275,6 @@
             \n`;
         };
 
-        // 4. Чекати Старт (Wait for line)
         Blockly.Blocks['wait_start'] = {
             init: function() {
                 this.appendDummyInput().appendField("🏁 Чекати Старт (Чорна лінія)");
@@ -1333,8 +1288,8 @@
             console.log("Waiting for start line...");
             while(true) {
                 ${checkStop()}
-                let s1 = window.sensorData ? window.sensorData[0] : 0; // Port 1
-                let s2 = window.sensorData ? window.sensorData[1] : 0; // Port 2
+                let s1 = window.sensorData ? window.sensorData[0] : 0; 
+                let s2 = window.sensorData ? window.sensorData[1] : 0; 
                 if (s1 > 60 || s2 > 60) break;
                 await new Promise(r => setTimeout(r, 50));
             }
@@ -1342,11 +1297,12 @@
             \n`;
         };
 
-        // 5. Лічити кола
+        // === FIXED LAYOUT ===
         Blockly.Blocks['count_laps'] = {
             init: function() {
-                this.appendDummyInput().appendField("🔢 Лічити кола до");
-                this.appendValueInput("LAPS").setCheck("Number");
+                this.appendValueInput("LAPS")
+                    .setCheck("Number")
+                    .appendField("🔢 Лічити кола до"); 
                 this.setPreviousStatement(true);
                 this.setNextStatement(true);
                 this.setColour(40); 
@@ -1377,7 +1333,6 @@
             \n`;
         };
 
-        // 6. Зупинитися на старті
         Blockly.Blocks['stop_at_start'] = {
             init: function() {
                 this.appendDummyInput().appendField("🛑 Зупинитися на старті");
@@ -1397,9 +1352,6 @@
             await sendDrivePacket(0,0,0,0);
             \n`;
         };
-
-
-        // --- EXISTING BLOCKS MODIFIED FOR SAFETY ---
 
         Blockly.Blocks['robot_turn_timed'] = {
             init: function() {
@@ -1583,7 +1535,6 @@
             return [block.getFieldValue('NUM'), javascript.Order.ATOMIC];
         };
 
-
         Blockly.Blocks['robot_move'] = { 
             init: function() { 
                 this.appendDummyInput().appendField("🚗 Їхати");
@@ -1603,6 +1554,35 @@
             await sendDrivePacket(appliedL, appliedR, appliedL, appliedR);\n`;
         };
         
+        // SOFT START BLOCK
+        Blockly.Blocks['robot_move_soft'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🚀 Плавний старт до");
+                this.appendValueInput("TARGET").setCheck("Number");
+                this.appendValueInput("SEC").setCheck("Number").appendField("за (сек)");
+                this.setInputsInline(true);
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(230);
+                this.setInputsInline(true);
+            }
+        };
+        javascript.javascriptGenerator.forBlock['robot_move_soft'] = function(block) {
+            var target = javascript.javascriptGenerator.valueToCode(block, 'TARGET', javascript.Order.ATOMIC) || '100';
+            var sec = javascript.javascriptGenerator.valueToCode(block, 'SEC', javascript.Order.ATOMIC) || '1';
+            return `
+            ${checkStop()}
+            var steps = ${sec} * 20; // 20 steps per sec (50ms)
+            for(var i=1; i<=steps; i++) {
+                ${checkStop()}
+                var current = (${target} / steps) * i;
+                var applied = current * (typeof _blocklySpeedMultiplier !== 'undefined' ? _blocklySpeedMultiplier : 1.0);
+                await sendDrivePacket(applied, applied, applied, applied);
+                await new Promise(r => setTimeout(r, 50));
+            }
+            \n`;
+        };
+
         Blockly.Blocks['move_4_motors'] = { 
             init: function() { 
                 this.appendDummyInput().appendField("🚙 4 Мотори (ABCD)");
@@ -1689,17 +1669,14 @@
             var idx = b.getFieldValue('SENS');
             return [`(window.sensorData ? window.sensorData[${idx}] : 0)`, javascript.Order.ATOMIC]; 
         };
-
+        
         Blockly.Blocks['go_home'] = { init: function() { this.appendDummyInput().appendField("🏠 Додому (Назад)"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour(230); } }; 
         javascript.javascriptGenerator.forBlock['go_home'] = function() { return 'await goHomeSequence();\n'; };
 
-        // Execution
         let moveHistory = [];
         let isCodeRunning = false;
-        // Global stop flag
         window._shouldStop = false;
         
-        // Memory Track State
         window._trackMemory = [];
         window._isRecordingTrack = false;
 
@@ -1767,7 +1744,7 @@
             }
             
             isCodeRunning = true; 
-            window._shouldStop = false; // Reset stop flag
+            window._shouldStop = false; 
             moveHistory = [];
             
             _pidIntegral = 0;
@@ -1783,7 +1760,6 @@
             
             log("Program Started");
 
-            // Loop protection in loops
             javascript.javascriptGenerator.STATEMENT_PREFIX = 'if (window._shouldStop) throw "STOPPED";\n';
             
             let code = "var _startTime = new Date().getTime(); var _blocklySpeedMultiplier = 1.0; var x; " + javascript.javascriptGenerator.workspaceToCode(workspace);
@@ -1806,7 +1782,7 @@
         };
         
         window.stopCode = function() { 
-            window._shouldStop = true; // Set flag to kill loops
+            window._shouldStop = true;
             isCodeRunning = false;
             window._isRecordingTrack = false;
             sendDrivePacket(0,0,0,0);

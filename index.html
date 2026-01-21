@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RoboControl Car V9.20</title>
+    <title>RoboControl Car V9.50</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,12 +25,6 @@
             background-color: #0f172a;
             color: white;
             overflow: hidden; 
-        }
-        
-        /* --- FIX FOR BLOCKLY COMMENTS --- */
-        .blocklyCommentTextarea {
-            color: #000000 !important; /* Чорний текст коментаря */
-            background-color: #fef08a !important; /* Світло-жовтий фон */
         }
         
         .glass-header {
@@ -101,10 +95,6 @@
             border-radius: 20px; 
             box-shadow: inset 0 0 15px rgba(0,0,0,0.8); 
             position: relative; touch-action: none; 
-        }
-        .joy-quad-base::before {
-            content: ''; position: absolute; top: 10%; bottom: 10%; left: 50%; width: 2px;
-            background: rgba(255,255,255,0.05); transform: translateX(-50%);
         }
         
         .joy-quad-stick { position: absolute; width: 56px; height: 56px; background: radial-gradient(circle at 30% 30%, #a855f7, #7e22ce); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 10; pointer-events: none; }
@@ -178,10 +168,10 @@
         .sensor-label { font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
         .sensor-value { font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold; color: #34d399; }
 
-        /* Top Buttons (RESIZED -25%) */
+        /* Top Buttons */
         .top-btn {
             pointer-events: auto;
-            width: 35px; height: 35px; /* Was 46px */
+            width: 35px; height: 35px;
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -189,12 +179,13 @@
             transition: all 0.2s;
             cursor: pointer;
             color: white;
-            font-size: 14px; /* Was 18px */
+            font-size: 14px;
         }
         .top-btn:active { transform: scale(0.9); }
         
         .btn-example { background: #f59e0b; }
         .btn-run { background: #22c55e; }
+        /* STOP STATE FOR BUTTON */
         .btn-run.running { background: #ef4444; animation: pulse-red 2s infinite; }
         
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
@@ -206,8 +197,10 @@
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: #94a3b8; }
         .nav-btn.active { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
         
+        /* LOG VIEW STYLES */
         .log-line { font-family: 'Courier New', monospace; font-size: 11px; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .log-tx { color: #60a5fa; } .log-rx { color: #34d399; } .log-err { color: #f87171; }
+
         .key-hint { display: inline-block; padding: 2px 6px; background: #334155; border-radius: 4px; font-family: monospace; font-size: 10px; color: #94a3b8; border-bottom: 2px solid #1e293b; }
         
         .tune-check { display: flex; align-items: center; justify-content: space-between; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155; }
@@ -243,7 +236,6 @@
             <button onclick="switchView('view-builder', this)" class="nav-btn" title="Блоки">
                 <i class="fa-solid fa-puzzle-piece text-lg"></i>
             </button>
-            <!-- 4 JOYSTICK ICON -->
             <button onclick="startDualMode(this)" class="nav-btn text-purple-400 hover:text-purple-300" title="4 Джойстики">
                 <div class="grid grid-cols-2 gap-0.5" style="width: 18px; height: 18px;">
                     <div class="bg-current rounded-full opacity-70"></div>
@@ -459,28 +451,24 @@
                 </button>
             </div>
 
-            <!-- NEW: MY FILES BLOCK -->
+            <!-- MY FILES BLOCK -->
             <div class="mt-6 pt-4 border-t border-slate-700">
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-file-code"></i> Мої файли
                 </h3>
                 <div class="grid grid-cols-4 gap-2">
-                    <!-- NEW (TRASH) BUTTON -->
                     <button onclick="newProject()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
                         <i class="fa-solid fa-trash text-red-400 text-xl group-hover:scale-110 transition-transform"></i>
                         <div class="text-xs font-bold text-slate-300">Новий</div>
                     </button>
-                    <!-- SAVE BUTTON -->
                     <button onclick="saveMyFile()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
                         <i class="fa-solid fa-download text-blue-400 text-xl group-hover:scale-110 transition-transform"></i>
                         <div class="text-xs font-bold text-slate-300">Зберегти</div>
                     </button>
-                    <!-- APPEND (ADD) BUTTON -->
                     <button onclick="document.getElementById('fileInputAppend').click()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
                         <i class="fa-solid fa-plus text-yellow-400 text-xl group-hover:scale-110 transition-transform"></i>
                         <div class="text-xs font-bold text-slate-300">Додати</div>
                     </button>
-                    <!-- OPEN (REPLACE) BUTTON -->
                     <button onclick="document.getElementById('fileInputReplace').click()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all flex flex-col items-center justify-center gap-2 group">
                         <i class="fa-solid fa-folder-open text-green-400 text-xl group-hover:scale-110 transition-transform"></i>
                         <div class="text-xs font-bold text-slate-300">Відкрити</div>
@@ -502,7 +490,6 @@
             <h3 class="text-lg font-bold text-white mb-4 text-center">⚙️ Налаштування шасі</h3>
             
             <div class="space-y-4">
-                <!-- Protocol Switch -->
                  <div class="bg-purple-900/20 p-3 rounded-xl border border-purple-500/30">
                     <label class="tune-check bg-transparent border-0 p-0">
                         <span class="text-sm text-purple-300 font-bold"><i class="fa-solid fa-shield-halved mr-2"></i>SLIP Протокол</span>
@@ -510,7 +497,6 @@
                     </label>
                 </div>
 
-                <!-- 4WD Switch -->
                 <div class="bg-blue-900/20 p-3 rounded-xl border border-blue-500/30">
                     <label class="tune-check bg-transparent border-0 p-0">
                         <span class="text-sm text-blue-300 font-bold"><i class="fa-solid fa-truck-monster mr-2"></i>Режим 4 моторів (4WD)</span>
@@ -518,7 +504,6 @@
                     </label>
                 </div>
 
-                <!-- Invert (New Layout) -->
                 <div class="space-y-2">
                     <span class="text-xs text-slate-400 uppercase tracking-widest font-bold">Інверсія моторів</span>
                     <div class="flex gap-2">
@@ -530,7 +515,6 @@
                     </div>
                 </div>
 
-                <!-- Trim -->
                 <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700">
                     <div class="flex justify-between text-xs text-slate-400 mb-2">
                         <span>Ліво</span>
@@ -541,7 +525,6 @@
                     <div class="text-center text-xs text-blue-400 font-mono mt-1" id="trimValueDisplay">0</div>
                 </div>
                 
-                <!-- Turn Sensitivity -->
                 <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700">
                     <div class="flex justify-between text-xs text-slate-400 mb-2">
                         <span>Плавний</span>
@@ -568,6 +551,7 @@
         </div>
     </div>
 
+    <!-- === LOG MODAL (New) === -->
     <div id="logModal" class="fixed inset-0 bg-black/50 z-40 hidden flex items-end sm:items-center justify-center backdrop-blur-sm sm:p-4">
         <div class="bg-slate-900 w-full sm:max-w-md h-2/3 sm:h-[500px] sm:rounded-2xl rounded-t-2xl shadow-2xl border border-slate-700 flex flex-col">
             <div class="flex justify-between items-center p-4 border-b border-slate-800">
@@ -608,11 +592,15 @@
             <block type="motor_single">
                 <value name="SPEED"><shadow type="math_number_limited"><field name="NUM">100</field></shadow></value>
             </block>
-            <!-- REPAINTED GO HOME (WAS IN TIME) -->
             <block type="go_home"></block>
+            <block type="record_start"></block>
+            <block type="replay_track"></block>
+            <block type="wait_start"></block>
+            <block type="stop_at_start"></block>
         </category>
+        
         <category name="🧠 Логіка" colour="%{BKY_LOGIC_HUE}">
-            <block type="controls_if"></block> <!-- ADDED SIMPLE IF -->
+            <block type="controls_if"></block>
             <block type="controls_if">
                 <mutation else="1"></mutation>
             </block>
@@ -621,7 +609,6 @@
             <block type="logic_negate"></block>
             <block type="logic_boolean"></block>
             <block type="sensor_get"></block>
-            <!-- NEW BLOCKS -->
             <block type="logic_edge_detect"></block>
             <block type="logic_schmitt">
                 <value name="VAL"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
@@ -637,6 +624,12 @@
                 <value name="TO"><shadow type="math_number"><field name="NUM">10</field></shadow></value>
                 <value name="BY"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
             </block>
+            <block type="replay_loop">
+                 <value name="TIMES"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
+             </block>
+             <block type="count_laps">
+                 <value name="LAPS"><shadow type="math_number"><field name="NUM">3</field></shadow></value>
+             </block>
         </category>
         <category name="Математика" colour="%{BKY_MATH_HUE}">
             <block type="math_number"></block>
@@ -646,31 +639,26 @@
                 <value name="FROM"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
                 <value name="TO"><shadow type="math_number"><field name="NUM">100</field></shadow></value>
             </block>
-            <!-- PID BLOCK -->
             <block type="math_pid">
                 <value name="ERROR"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
                 <value name="KP"><shadow type="math_number"><field name="NUM">1</field></shadow></value>
                 <value name="KI"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
                 <value name="KD"><shadow type="math_number"><field name="NUM">0</field></shadow></value>
             </block>
-            <!-- SMOOTH BLOCK -->
-            <block type="math_smooth">
-                <!-- Removed shadow to force block connection -->
-            </block>
+            <block type="math_smooth"></block>
         </category>
         <category name="Контроль" colour="#FFBF00">
-            <!-- UPDATED WAIT BLOCK -->
             <block type="wait_until_sensor">
                 <field name="SENS">0</field>
                 <field name="OP">LT</field>
                 <value name="VAL"><shadow type="math_number"><field name="NUM">20</field></shadow></value>
             </block>
             <block type="wait_seconds"><value name="SECONDS"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
-            <!-- NEW TIMER BLOCKS -->
             <block type="timer_get"></block>
             <block type="timer_reset"></block>
         </category>
         <category name="Змінні" colour="%{BKY_VARIABLES_HUE}" custom="VARIABLE"></category>
+        <!-- REMOVED COMMENT CATEGORY -->
     </xml>
 
     <script>
@@ -689,7 +677,6 @@
         let isGyroEnabled = false;
         let activeView = 'view-joystick';
         
-        // Gyro Calibration
         let gyroCalibrated = false;
         let gyroOffset = { x: 0, y: 0 };
         
@@ -697,18 +684,15 @@
         let currentR = 0;
         let speedMultiplier = 1.0; 
         
-        // Track raw joy position to update on speed change
         let lastJoyX = 0;
         let lastJoyY = 0;
         
-        // TUNING STATE
         let tuning = { trim: 0, invertL: false, invertR: false, useSlip: true, use4Motors: false, turnSens: 100 };
         try {
             const saved = localStorage.getItem('roboTuning_v8');
             if(saved) tuning = { ...tuning, ...JSON.parse(saved) };
         } catch(e) {}
         
-        // Init UI
         document.getElementById('trimSlider').value = tuning.trim;
         document.getElementById('trimValueDisplay').innerText = tuning.trim > 0 ? `R+${tuning.trim}` : (tuning.trim < 0 ? `L${tuning.trim}` : '0');
         document.getElementById('invLCheck').checked = tuning.invertL;
@@ -743,6 +727,34 @@
         });
         btnLog.addEventListener('touchend', () => clearTimeout(logPressTimer));
 
+        // LOGGING FUNCTIONS (AS REQUESTED)
+        function log(msg, type = 'info') {
+            const container = document.getElementById('logContainer');
+            if (container.childElementCount > 1500) {
+                container.removeChild(container.firstElementChild);
+            }
+            const el = document.createElement('div');
+            el.classList.add('log-line');
+            if(type === 'tx') el.classList.add('log-tx');
+            else if(type === 'rx') el.classList.add('log-rx');
+            else if(type === 'err') el.classList.add('log-err');
+            else el.classList.add('text-slate-400');
+            
+            const time = new Date().toLocaleTimeString().split(' ')[0];
+            el.innerHTML = `<span class="opacity-50 text-[9px] mr-2">${time}</span>${msg}`;
+            
+            container.appendChild(el);
+            container.scrollTop = container.scrollHeight;
+        }
+        function clearLog() { document.getElementById('logContainer').innerHTML = ''; }
+        function toggleLogModal() { document.getElementById('logModal').classList.toggle('hidden'); }
+
+        // Override console.log for better debugging view
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            log(args.join(' '));
+        };
 
         function updateTrimDisplay(val) {
             if(val !== null) tuning.trim = parseInt(val);
@@ -766,7 +778,6 @@
         // === HEARTBEAT ===
         setInterval(() => {
             if (isConnected && activeView === 'view-joystick') {
-                // Apply 4WD logic if enabled, otherwise 2WD
                 let m1 = currentL, m2 = currentR;
                 let m3 = tuning.use4Motors ? currentL : 0;
                 let m4 = tuning.use4Motors ? currentR : 0;
@@ -774,24 +785,23 @@
             }
         }, 100);
 
-        // === SLIP PROTOCOL (RFC 1055) ===
+        // === SLIP PROTOCOL ===
         const SLIP_END = 0xC0;
         const SLIP_ESC = 0xDB;
         const SLIP_ESC_END = 0xDC;
         const SLIP_ESC_ESC = 0xDD;
 
-        // RX BUFFER for SLIP
         let rxBuffer = [];
 
         function slipEncode(dataArray) {
             let encoded = [];
-            encoded.push(SLIP_END); // Start frame
+            encoded.push(SLIP_END);
             for(let byte of dataArray) {
                 if(byte === SLIP_END) { encoded.push(SLIP_ESC, SLIP_ESC_END); }
                 else if(byte === SLIP_ESC) { encoded.push(SLIP_ESC, SLIP_ESC_ESC); }
                 else { encoded.push(byte); }
             }
-            encoded.push(SLIP_END); // End frame
+            encoded.push(SLIP_END);
             return new Uint8Array(encoded);
         }
 
@@ -805,13 +815,13 @@
                 rxBuffer.push(byte); 
             } else {
                 if (rxBuffer.length > 0 && rxBuffer[rxBuffer.length - 1] === SLIP_ESC) {
-                    rxBuffer.pop(); // Remove ESC
+                    rxBuffer.pop(); 
                     if (byte === SLIP_ESC_END) rxBuffer.push(SLIP_END);
                     else if (byte === SLIP_ESC_ESC) rxBuffer.push(SLIP_ESC);
                     else {
                         rxBuffer.push(byte);
                         log("SLIP Error: Bad Escape", "err");
-                    } 
+                    }
                 } else {
                     rxBuffer.push(byte);
                 }
@@ -819,15 +829,14 @@
         }
 
         function handlePacket(data) {
-            let hexStr = data.map(b => b.toString(16).padStart(2,'0')).join(' ');
             if (data.length >= 4) {
                 window.sensorData = data;
                 if(document.getElementById('valP1')) document.getElementById('valP1').innerText = data[0];
                 if(document.getElementById('valP2')) document.getElementById('valP2').innerText = data[1];
                 if(document.getElementById('valP3')) document.getElementById('valP3').innerText = data[2];
                 if(document.getElementById('valP4')) document.getElementById('valP4').innerText = data[3];
-
             } else {
+                 let hexStr = data.map(b => b.toString(16).padStart(2,'0')).join(' ');
                  const str = new TextDecoder().decode(new Uint8Array(data)).trim();
                  log(`RX RAW: ${hexStr} / "${str}"`, 'rx');
             }
@@ -837,10 +846,20 @@
         window.motorState = { m1:0, m2:0, m3:0, m4:0 };
 
         async function sendDrivePacket(m1, m2, m3, m4) {
-            if (!isConnected && !window.isSimulating) {
-                return;
-            }
+            if (!isConnected && !window.isSimulating) return;
             window.motorState = { m1, m2, m3, m4 };
+
+            // === RECORDING LOGIC ===
+            if (window._isRecordingTrack) {
+                let now = new Date().getTime();
+                window._trackMemory.push({
+                    t: now,
+                    l: m1,
+                    r: m2,
+                    m3: m3,
+                    m4: m4
+                });
+            }
 
             m1 = Math.max(-100, Math.min(100, parseInt(m1)));
             m2 = Math.max(-100, Math.min(100, parseInt(m2)));
@@ -879,28 +898,6 @@
              }
             try { await characteristic.writeValue(finalPacket); log(`Cmd: ${str}`, 'tx'); } catch(e) { log(e, 'err'); }
         }
-
-        // Logging with Limit
-        function log(msg, type = 'info') {
-            const container = document.getElementById('logContainer');
-            if (container.childElementCount > 1500) {
-                container.removeChild(container.firstElementChild);
-            }
-            const el = document.createElement('div');
-            el.classList.add('log-line');
-            if(type === 'tx') el.classList.add('log-tx');
-            else if(type === 'rx') el.classList.add('log-rx');
-            else if(type === 'err') el.classList.add('log-err');
-            else el.classList.add('text-slate-400');
-            
-            const time = new Date().toLocaleTimeString().split(' ')[0];
-            el.innerHTML = `<span class="opacity-50 text-[9px] mr-2">${time}</span>${msg}`;
-            
-            container.appendChild(el);
-            container.scrollTop = container.scrollHeight;
-        }
-        function clearLog() { document.getElementById('logContainer').innerHTML = ''; }
-        function toggleLogModal() { document.getElementById('logModal').classList.toggle('hidden'); }
 
         // Bluetooth Connect
         btnConnect.addEventListener('click', async () => {
@@ -963,7 +960,6 @@
         }
         function startDualMode(btn) { switchView('view-dual', btn); }
 
-        // Pass Modal
         function openPassModal() { document.getElementById('passModal').classList.remove('hidden'); }
         function closePassModal() { document.getElementById('passModal').classList.add('hidden'); }
         function sendPassword() {
@@ -1009,7 +1005,7 @@
             isGyroEnabled = !isGyroEnabled;
             if (isGyroEnabled) {
                 gyroBtn.classList.add('gyro-active'); 
-                gyroCalibrated = false; // Flag to reset center on next move
+                gyroCalibrated = false; 
                 window.addEventListener('deviceorientation', handleGyro);
             } else {
                 gyroBtn.classList.remove('gyro-active'); window.removeEventListener('deviceorientation', handleGyro); resetJoystick();
@@ -1210,7 +1206,7 @@
             toolboxPosition: 'end', 
             grid: { spacing: 40, length: 2, colour: '#334155', snap: true }, 
             zoom: { controls: false, wheel: true, startScale: 0.75, maxScale: 30, minScale: 0.2, scaleSpeed: 1.2, pinch: true }, 
-            trashcan: false, // DISABLED BASKET
+            trashcan: false, 
             move: { scrollbars: true, drag: true, wheel: false }
         });
         
@@ -1220,7 +1216,11 @@
             document.head.appendChild(style);
         }, 500);
 
-        // --- UPDATED START BLOCK (Clean, no image) ---
+        // --- GLOBAL STOP CHECK HELPER ---
+        function checkStop() {
+            return `if (typeof window._shouldStop !== 'undefined' && window._shouldStop) { throw "STOPPED"; }\n`;
+        }
+
         Blockly.Blocks['start_hat'] = {
             init: function() {
                 this.appendDummyInput().appendField("🏁 СТАРТ");
@@ -1230,8 +1230,177 @@
         };
         javascript.javascriptGenerator.forBlock['start_hat'] = function(b) { return ''; };
 
-        // --- NEW BLOCKS IMPLEMENTATION ---
+        // --- REMOVED BLOCK_COMMENT DEFINITION ---
+
+        // --- MEMORY BLOCKS ---
         
+        // 1. Запам'ятати трасу
+        Blockly.Blocks['record_start'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🔴 Запам'ятати трасу (Почати запис)");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(260); 
+            }
+        };
+        javascript.javascriptGenerator.forBlock['record_start'] = function(block) {
+            return `
+            window._trackMemory = [];
+            window._isRecordingTrack = true;
+            console.log("Recording started...");
+            \n`;
+        };
+
+        // 2. Відтворити трасу
+        Blockly.Blocks['replay_track'] = {
+            init: function() {
+                this.appendDummyInput().appendField("▶️ Відтворити записану трасу");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(260); 
+            }
+        };
+        javascript.javascriptGenerator.forBlock['replay_track'] = function(block) {
+            return `
+            window._isRecordingTrack = false; // Stop recording if active
+            console.log("Replaying track, steps: " + window._trackMemory.length);
+            
+            if (window._trackMemory.length > 0) {
+                let startTime = window._trackMemory[0].t;
+                for (let i = 0; i < window._trackMemory.length; i++) {
+                    ${checkStop()}
+                    let step = window._trackMemory[i];
+                    
+                    if (i > 0) {
+                        let prev = window._trackMemory[i-1];
+                        let delay = step.t - prev.t;
+                        if (delay > 0) await new Promise(r => setTimeout(r, delay));
+                    }
+                    
+                    await sendDrivePacket(step.l, step.r, step.m3, step.m4);
+                }
+                await sendDrivePacket(0,0,0,0);
+            }
+            \n`;
+        };
+        
+        // 3. Відтворити N разів
+        Blockly.Blocks['replay_loop'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🔄 Повторити трасу з пам'яті");
+                this.appendValueInput("TIMES").setCheck("Number");
+                this.appendDummyInput().appendField("разів");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(260); 
+            }
+        };
+        javascript.javascriptGenerator.forBlock['replay_loop'] = function(block) {
+            let times = javascript.javascriptGenerator.valueToCode(block, 'TIMES', javascript.Order.ATOMIC) || '1';
+            return `
+            window._isRecordingTrack = false;
+            for(let loop=0; loop < ${times}; loop++) {
+                ${checkStop()}
+                if (window._trackMemory.length > 0) {
+                    for (let i = 0; i < window._trackMemory.length; i++) {
+                        ${checkStop()}
+                        let step = window._trackMemory[i];
+                        if (i > 0) {
+                            let prev = window._trackMemory[i-1];
+                            let delay = step.t - prev.t;
+                            if (delay > 0) await new Promise(r => setTimeout(r, delay));
+                        }
+                        await sendDrivePacket(step.l, step.r, step.m3, step.m4);
+                    }
+                    await sendDrivePacket(0,0,0,0);
+                    await new Promise(r => setTimeout(r, 500));
+                }
+            }
+            \n`;
+        };
+
+        // 4. Чекати Старт (Wait for line)
+        Blockly.Blocks['wait_start'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🏁 Чекати Старт (Чорна лінія)");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(40); 
+            }
+        };
+        javascript.javascriptGenerator.forBlock['wait_start'] = function(block) {
+            return `
+            console.log("Waiting for start line...");
+            while(true) {
+                ${checkStop()}
+                let s1 = window.sensorData ? window.sensorData[0] : 0; // Port 1
+                let s2 = window.sensorData ? window.sensorData[1] : 0; // Port 2
+                if (s1 > 60 || s2 > 60) break;
+                await new Promise(r => setTimeout(r, 50));
+            }
+            console.log("Start line detected!");
+            \n`;
+        };
+
+        // 5. Лічити кола
+        Blockly.Blocks['count_laps'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🔢 Лічити кола до");
+                this.appendValueInput("LAPS").setCheck("Number");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(40); 
+            }
+        };
+        javascript.javascriptGenerator.forBlock['count_laps'] = function(block) {
+            let laps = javascript.javascriptGenerator.valueToCode(block, 'LAPS', javascript.Order.ATOMIC) || '1';
+            return `
+            let lapsTarget = ${laps};
+            let lapsCounted = 0;
+            let onLine = false;
+            
+            console.log("Counting laps: " + lapsTarget);
+            
+            while(lapsCounted < lapsTarget) {
+                ${checkStop()}
+                let s = (window.sensorData && window.sensorData[0] > 60); 
+                
+                if (s && !onLine) {
+                    onLine = true;
+                    lapsCounted++;
+                    console.log("Lap " + lapsCounted);
+                } else if (!s && onLine) {
+                    onLine = false;
+                }
+                await new Promise(r => setTimeout(r, 50));
+            }
+            \n`;
+        };
+
+        // 6. Зупинитися на старті
+        Blockly.Blocks['stop_at_start'] = {
+            init: function() {
+                this.appendDummyInput().appendField("🛑 Зупинитися на старті");
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(0); 
+            }
+        };
+        javascript.javascriptGenerator.forBlock['stop_at_start'] = function(block) {
+            return `
+            while(true) {
+                ${checkStop()}
+                let s1 = window.sensorData ? window.sensorData[0] : 0;
+                if (s1 > 60) break; 
+                await new Promise(r => setTimeout(r, 20));
+            }
+            await sendDrivePacket(0,0,0,0);
+            \n`;
+        };
+
+
+        // --- EXISTING BLOCKS MODIFIED FOR SAFETY ---
+
         Blockly.Blocks['robot_turn_timed'] = {
             init: function() {
                 this.appendDummyInput()
@@ -1241,7 +1410,7 @@
                 this.appendDummyInput().appendField("сек");
                 this.setPreviousStatement(true);
                 this.setNextStatement(true);
-                this.setColour(230); // Matched Blue
+                this.setColour(230); 
             }
         };
         javascript.javascriptGenerator.forBlock['robot_turn_timed'] = function(block) {
@@ -1252,6 +1421,7 @@
             var r = (dir === 'LEFT') ? 80 : -80;
             
             return `
+            ${checkStop()}
             recordMove(${l}, ${r}, ${l}, ${r}); 
             await sendDrivePacket(${l}, ${r}, ${l}, ${r});
             await new Promise(r => setTimeout(r, ${sec} * 1000));
@@ -1267,7 +1437,7 @@
                 this.appendDummyInput().appendField("%");
                 this.setPreviousStatement(true);
                 this.setNextStatement(true);
-                this.setColour(230); // Matched Blue
+                this.setColour(230); 
             }
         };
         javascript.javascriptGenerator.forBlock['robot_set_speed'] = function(block) {
@@ -1275,10 +1445,8 @@
             return `_blocklySpeedMultiplier = ${s} / 100.0;\n`;
         };
         
-        // --- COMPACT WAIT BLOCK ---
         Blockly.Blocks['wait_until_sensor'] = {
              init: function() { 
-                 // Used value input to force inline
                 this.appendValueInput("VAL")
                     .setCheck("Number")
                     .appendField("⏳ Чекати, поки Порт")
@@ -1297,6 +1465,7 @@
             
             return `
             while(true) {
+                ${checkStop()}
                 var currentVal = window.sensorData ? window.sensorData[${s}] : 0;
                 if (currentVal ${op} ${val}) break;
                 await new Promise(r => setTimeout(r, 50)); 
@@ -1304,7 +1473,6 @@
             \n`;
         };
 
-        // --- TIMER BLOCKS ---
         Blockly.Blocks['timer_get'] = {
             init: function() {
                 this.appendDummyInput().appendField("⏱️ Таймер (с)");
@@ -1328,7 +1496,6 @@
             return `_startTime = new Date().getTime();\n`;
         };
 
-        // --- PID BLOCK (MATH) ---
         Blockly.Blocks['math_pid'] = {
             init: function() {
                 this.appendDummyInput().appendField("🎛️ PID Регулятор");
@@ -1338,7 +1505,7 @@
                 this.appendValueInput("KD").setCheck("Number").appendField("Kd");
                 this.setOutput(true, "Number");
                 this.setInputsInline(true); 
-                this.setColour(230); // Math color
+                this.setColour(230);
             }
         };
         javascript.javascriptGenerator.forBlock['math_pid'] = function(block) {
@@ -1349,13 +1516,12 @@
             return [`calculatePID(${error}, ${kp}, ${ki}, ${kd})`, javascript.Order.FUNCTION_CALL];
         };
 
-        // --- EDGE DETECTION BLOCK (LOGIC) ---
         Blockly.Blocks['logic_edge_detect'] = {
             init: function() {
                 this.appendDummyInput().appendField("⚡ Сигнал став активним (0→1)");
                 this.appendValueInput("VAL").setCheck(null).appendField("Перевірити");
                 this.setOutput(true, "Boolean");
-                this.setColour(210); // Logic color
+                this.setColour(210); 
                 this.setInputsInline(true);
             }
         };
@@ -1365,7 +1531,6 @@
             return [`checkRisingEdge('${id}', ${val})`, javascript.Order.FUNCTION_CALL];
         };
 
-        // --- SCHMITT TRIGGER (LOGIC) ---
         Blockly.Blocks['logic_schmitt'] = {
             init: function() {
                 this.appendDummyInput().appendField("🛡️ Вкл >");
@@ -1386,7 +1551,6 @@
             return [`schmittTrigger('${id}', ${val}, ${low}, ${high})`, javascript.Order.FUNCTION_CALL];
         };
 
-        // --- MOVING AVERAGE (MATH) ---
         Blockly.Blocks['math_smooth'] = {
             init: function() {
                 this.appendValueInput("VAL")
@@ -1407,11 +1571,10 @@
             return [`smoothValue('${id}', ${val}, ${size})`, javascript.Order.FUNCTION_CALL];
         };
 
-        // --- LIMITED NUMBER BLOCK (FOR MOTORS) ---
         Blockly.Blocks['math_number_limited'] = {
             init: function() {
                 this.appendDummyInput()
-                    .appendField(new Blockly.FieldNumber(100, -100, 100), "NUM"); // Min -100, Max 100
+                    .appendField(new Blockly.FieldNumber(100, -100, 100), "NUM"); 
                 this.setOutput(true, "Number");
                 this.setColour(230);
             }
@@ -1433,6 +1596,7 @@
             var l = javascript.javascriptGenerator.valueToCode(b, 'L', javascript.Order.ATOMIC) || '0';
             var r = javascript.javascriptGenerator.valueToCode(b, 'R', javascript.Order.ATOMIC) || '0';
             return `
+            ${checkStop()}
             var appliedL = ${l} * (typeof _blocklySpeedMultiplier !== 'undefined' ? _blocklySpeedMultiplier : 1.0);
             var appliedR = ${r} * (typeof _blocklySpeedMultiplier !== 'undefined' ? _blocklySpeedMultiplier : 1.0);
             recordMove(appliedL, appliedR, appliedL, appliedR); 
@@ -1456,7 +1620,9 @@
             var m2 = javascript.javascriptGenerator.valueToCode(block, 'M2', javascript.Order.ATOMIC) || '0';
             var m3 = javascript.javascriptGenerator.valueToCode(block, 'M3', javascript.Order.ATOMIC) || '0';
             var m4 = javascript.javascriptGenerator.valueToCode(block, 'M4', javascript.Order.ATOMIC) || '0';
-            return `await sendDrivePacket(${m1}, ${m2}, ${m3}, ${m4});\n`;
+            return `
+            ${checkStop()}
+            await sendDrivePacket(${m1}, ${m2}, ${m3}, ${m4});\n`;
         };
 
         Blockly.Blocks['motor_single'] = { 
@@ -1475,6 +1641,7 @@
             var m = block.getFieldValue('MOTOR'); 
             var s = javascript.javascriptGenerator.valueToCode(block, 'SPEED', javascript.Order.ATOMIC) || '0';
             return `
+            ${checkStop()}
             var current = window.motorState || {m1:0, m2:0, m3:0, m4:0};
             var m1 = current.m1, m2 = current.m2, m3 = current.m3, m4 = current.m4;
             if('${m}' == '1') m1 = ${s};
@@ -1500,7 +1667,12 @@
         };
         javascript.javascriptGenerator.forBlock['wait_seconds'] = function(b) { 
             var s = javascript.javascriptGenerator.valueToCode(b, 'SECONDS', javascript.Order.ATOMIC) || '0';
-            return `recordWait(${s}); await new Promise(r => setTimeout(r, ${s} * 1000));\n`; 
+            return `
+            ${checkStop()}
+            recordWait(${s}); 
+            await new Promise(r => setTimeout(r, ${s} * 1000));
+            ${checkStop()}
+            \n`; 
         };
 
         Blockly.Blocks['sensor_get'] = { 
@@ -1518,19 +1690,25 @@
             return [`(window.sensorData ? window.sensorData[${idx}] : 0)`, javascript.Order.ATOMIC]; 
         };
 
-        Blockly.Blocks['go_home'] = { init: function() { this.appendDummyInput().appendField("🏠 Додому (Назад)"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour(230); } }; // REPAINTED TO 230 (BLUE)
+        Blockly.Blocks['go_home'] = { init: function() { this.appendDummyInput().appendField("🏠 Додому (Назад)"); this.setPreviousStatement(true); this.setNextStatement(true); this.setColour(230); } }; 
         javascript.javascriptGenerator.forBlock['go_home'] = function() { return 'await goHomeSequence();\n'; };
-
-        // REMOVED CONSOLE_LOG BLOCK
 
         // Execution
         let moveHistory = [];
         let isCodeRunning = false;
+        // Global stop flag
+        window._shouldStop = false;
+        
+        // Memory Track State
+        window._trackMemory = [];
+        window._isRecordingTrack = false;
+
         function recordMove(m1, m2, m3, m4) { if(isCodeRunning) moveHistory.push({ type: 'move', m1: parseInt(m1), m2: parseInt(m2), m3: parseInt(m3), m4: parseInt(m4) }); }
         function recordWait(sec) { if(isCodeRunning) moveHistory.push({ type: 'wait', sec: parseFloat(sec) }); }
 
         async function goHomeSequence() {
             for (let i = moveHistory.length - 1; i >= 0; i--) {
+                if(window._shouldStop) return;
                 const action = moveHistory[i];
                 if (action.type === 'wait') await new Promise(r => setTimeout(r, action.sec * 1000));
                 else if (action.type === 'move') await sendDrivePacket(-action.m1, -action.m2, -action.m3, -action.m4);
@@ -1538,7 +1716,6 @@
             await sendDrivePacket(0, 0, 0, 0); moveHistory = [];
         }
 
-        // --- PID HELPER ---
         var _pidIntegral = 0;
         var _pidLastError = 0;
         window.calculatePID = function(error, kp, ki, kd) {
@@ -1550,26 +1727,19 @@
             return p + i + d;
         };
 
-        // --- NEW HELPERS (Memory for stateful blocks) ---
         window.blockStates = {}; 
 
         window.checkRisingEdge = function(id, currentVal) {
-            // Treat boolean true or numbers > 0 as "active"
             let boolVal = currentVal === true || (typeof currentVal === 'number' && currentVal > 0);
             let lastVal = window.blockStates[id] || false;
-            
-            // Store current for next time
             window.blockStates[id] = boolVal; 
-            
-            // Return true ONLY if it was false before AND is true now
             return boolVal && !lastVal; 
         };
 
         window.schmittTrigger = function(id, val, low, high) {
-            let state = window.blockStates[id] || false; // Default OFF
+            let state = window.blockStates[id] || false; 
             if (val >= high) state = true;
             else if (val <= low) state = false;
-            // If between low and high, keep previous state
             window.blockStates[id] = state;
             return state;
         };
@@ -1579,7 +1749,7 @@
             if(!Array.isArray(buffer)) buffer = [];
             
             buffer.push(val);
-            if (buffer.length > size) buffer.shift(); // Remove oldest
+            if (buffer.length > size) buffer.shift(); 
             
             window.blockStates[id] = buffer;
             
@@ -1587,18 +1757,23 @@
             return sum / buffer.length;
         };
 
-        window.toggleRunState = function() { if(isCodeRunning) stopCode(); else runCode(); };
+        window.toggleRunState = function() { 
+            if(isCodeRunning) stopCode(); else runCode(); 
+        };
+        
         window.runCode = async function() {
             if(!isConnected) { 
                 alert("Спочатку підключіться до Bluetooth!"); return;
             }
             
-            isCodeRunning = true; moveHistory = [];
+            isCodeRunning = true; 
+            window._shouldStop = false; // Reset stop flag
+            moveHistory = [];
             
-            // RESET STATES
             _pidIntegral = 0;
             _pidLastError = 0;
             window.blockStates = {}; 
+            window._trackMemory = []; 
 
             const btn = document.getElementById('globalRunBtn');
             const icon = document.getElementById('runIcon');
@@ -1606,14 +1781,36 @@
             icon.classList.remove('fa-play'); 
             icon.classList.add('fa-stop');
             
-            // Added _startTime for timer
+            log("Program Started");
+
+            // Loop protection in loops
+            javascript.javascriptGenerator.STATEMENT_PREFIX = 'if (window._shouldStop) throw "STOPPED";\n';
+            
             let code = "var _startTime = new Date().getTime(); var _blocklySpeedMultiplier = 1.0; var x; " + javascript.javascriptGenerator.workspaceToCode(workspace);
             
-            try { const runner = new Function(`return (async () => { ${code} })();`); await runner(); } catch(e) { console.error(e); log("JS Error: " + e.message, 'err'); } 
-            finally { if(isCodeRunning) stopCode(); }
+            try { 
+                const runner = new Function(`return (async () => { ${code} })();`); 
+                await runner(); 
+            } catch(e) { 
+                if (e === "STOPPED") {
+                    console.log("Program stopped by user.");
+                    log("Program Stopped by User", "warn");
+                } else {
+                    console.error(e); 
+                    log("Runtime Error: " + e, "error");
+                }
+            } 
+            finally { 
+                stopCode(); 
+            }
         };
+        
         window.stopCode = function() { 
-            sendDrivePacket(0,0,0,0); isCodeRunning = false;
+            window._shouldStop = true; // Set flag to kill loops
+            isCodeRunning = false;
+            window._isRecordingTrack = false;
+            sendDrivePacket(0,0,0,0);
+            
             const btn = document.getElementById('globalRunBtn');
             const icon = document.getElementById('runIcon');
             btn.classList.remove('running'); 
@@ -1621,7 +1818,6 @@
             icon.classList.add('fa-play');
         };
         
-        // Example Loader
         function loadExample(type) {
              const xmlAutopilot = '<xml xmlns="https://developers.google.com/blockly/xml"><block type="start_hat" id="start" x="50" y="50"><next><block type="controls_whileUntil" id="loop"><field name="MODE">WHILE</field><value name="BOOL"><block type="logic_boolean"><field name="BOOL">TRUE</field></block></value><statement name="DO"><block type="controls_if"><mutation else="1"></mutation><value name="IF0"><block type="wait_until_sensor"><field name="SENS">0</field><field name="OP">LT</field><value name="VAL"><shadow type="math_number"><field name="NUM">25</field></shadow></value></block></value><statement name="DO0"><block type="robot_stop"><next><block type="robot_turn_timed"><field name="DIR">RIGHT</field><value name="SEC"><shadow type="math_number"><field name="NUM">0.5</field></shadow></value></block></next></block></statement><statement name="ELSE"><block type="robot_move"><value name="L"><shadow type="math_number"><field name="NUM">80</field></shadow></value><value name="R"><shadow type="math_number"><field name="NUM">80</field></shadow></value></block></statement></block></statement></block></next></block></xml>';
              
@@ -1652,16 +1848,14 @@
             }
         }
 
-        // --- MY FILES LOGIC ---
         function saveMyFile() {
             try {
                 const xmlDom = Blockly.Xml.workspaceToDom(workspace);
                 const xmlText = Blockly.utils.xml.domToText(xmlDom);
                 
-                // NEW: Ask for filename
                 let fileName = prompt("Введіть назву для файлу:", "robot_code");
-                if (fileName === null) return; // Cancelled
-                if (!fileName) fileName = "robot_block_code"; // Default
+                if (fileName === null) return; 
+                if (!fileName) fileName = "robot_block_code"; 
                 if (!fileName.toLowerCase().endsWith(".xml")) fileName += ".xml";
 
                 const blob = new Blob([xmlText], {type: "text/xml"});
@@ -1676,7 +1870,7 @@
                 document.getElementById('exampleModal').classList.add('hidden');
                 log("Файл збережено: " + fileName, "info");
             } catch(e) {
-                log("Помилка збереження: " + e, "err");
+                console.error(e);
             }
         }
 
@@ -1693,18 +1887,17 @@
                     }
                     const xmlDom = Blockly.utils.xml.textToDom(xmlText);
                     Blockly.Xml.domToWorkspace(xmlDom, workspace);
-                    log(isAppend ? "Файл додано!" : "Файл відкрито!", "info");
                     document.getElementById('exampleModal').classList.add('hidden');
+                    log(isAppend ? "Файл додано!" : "Файл відкрито!", "info");
                 } catch(err) {
                     alert("Помилка при завантаженні файлу. Переконайтесь, що це правильний XML.");
                     log("Load Error: " + err, "err");
                 }
             };
             reader.readAsText(file);
-            input.value = ''; // Reset input
+            input.value = ''; 
         }
 
-        // Custom Prompts for Variables
         Blockly.dialog.setPrompt(function(message, defaultValue, callback) {
             const overlay = document.createElement('div');
             overlay.className = 'fixed inset-0 bg-black/90 z-[100] flex items-center justify-center p-4 backdrop-blur-sm';
